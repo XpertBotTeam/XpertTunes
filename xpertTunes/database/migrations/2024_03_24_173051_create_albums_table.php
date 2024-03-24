@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("title");
             $table->string("cover_pic");
-            $table->date("release_date");
+            $table->string("release_date");
             $table->unsignedBigInteger('artist_id'); 
             $table->foreign('artist_id')->references('id')->on('artists');
             $table->timestamps();

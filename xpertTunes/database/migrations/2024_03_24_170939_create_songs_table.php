@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("track");
             $table->string("genre");    
-            $table->date("release_date");
+            $table->string("release_date");
             $table->timestamps();
         });
     }
