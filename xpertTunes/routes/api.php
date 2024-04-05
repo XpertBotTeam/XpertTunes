@@ -9,15 +9,11 @@ use App\Http\Controllers\API\UserController;
 Route::post('/login', [UserController::class,'login']);
 Route::post('/register', [UserController::class,'register']);
 
-<<<<<<< HEAD
-//setting route group
-=======
 Route::resource('artists',ArtistController::class);
 
 
 
 // setting route group
->>>>>>> myApi
 Route::group(['middleware'=>['auth:sanctum']],function(){
 
 });
