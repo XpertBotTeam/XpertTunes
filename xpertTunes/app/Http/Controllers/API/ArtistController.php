@@ -105,4 +105,44 @@ class ArtistController extends Controller
             ]);
         }
     }
+
+
+    public function albums($id, Request $request)
+    {
+        $artist= Artist::find($id);
+        if(!is_null($artist))
+        {
+            $albums=$artist->albums;
+            return response()->json([
+                'status' => true,
+                'data' => $albums,
+                'message' => 'Albums of a specific artist'
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'message' => 'Artist not Found'
+            ]);
+        }
+    }
+
+    /* public function albums($id, Request $request)
+    {
+        $artist= Artist::with('albums')->find($id);
+        if(!is_null($artist))
+        {
+            return response()->json([
+                'status' => true,
+                'data' => $artist,
+                'message' => 'Albums of a specific artist'
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'message' => 'Artist not Found'
+            ]);
+        }
+    } */
 }
