@@ -22,7 +22,11 @@ class SongRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "title" => "required",
+            "track" => "required",
+            "genre" => "required",
+            "release_date" => "required",
+            "album_id" => "required",
         ];
     }
 }

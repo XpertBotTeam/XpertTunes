@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Song;
 use Illuminate\Http\Request;
+use App\Http\Requests\SongRequest;
 
 class SongController extends Controller
 {
@@ -22,19 +23,16 @@ class SongController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SongRequest $request)
     {
-        //
+        $song = Song::create($request->all());
+        return response()->json([
+            'status'=>true,
+            'data'=>$song,
+            'message'=>'Song Created Successfully'
+        ]);
     }
 
     /**
@@ -42,7 +40,23 @@ class SongController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $song = Song::find($id);
+        if(!is_null($song))
+        {
+            return response()->json([
+                'status'=>true,
+                'data'=>$song,
+                'message'=>'Song data returned successfully'
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status'=>false,
+                'data'=>null,
+                'message'=>'Song data not found'
+            ]);
+        }
     }
 
     /**
@@ -58,7 +72,24 @@ class SongController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $song = Song::find($id);
+        if(!is_null($song))
+        {
+            $song->update($request->all());
+            return response()->json([
+                'status'=>true,
+                'data'=>$song,
+                'message'=>'Song data updated successfully'
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status'=>false,
+                'data'=>null,
+                'message'=>'Song data not found'
+            ]);
+        }
     }
 
     /**
@@ -66,6 +97,23 @@ class SongController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $song = Song::find($id);
+        if(!is_null($song))
+        {
+            $song->delete();
+            return response()->json([
+                'status'=>true,
+                'data'=>null,
+                'message'=>"Song deleted successfully"
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status'=>false,
+                'data'=>null,
+                'message'=>"Song not found"
+            ]);
+        }
     }
 }

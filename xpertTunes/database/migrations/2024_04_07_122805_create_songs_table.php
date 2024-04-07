@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('album_id'); 
             $table->foreign('album_id')->references('id')->on('albums');
+            $table->string("title");
             $table->string("track");
             $table->string("genre");    
             $table->string("release_date");

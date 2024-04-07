@@ -104,4 +104,26 @@ class AlbumController extends Controller
             ]);
         }
     }
+
+    public function songs($id, Request $request)
+    {
+        $album = Album::find($id);
+        if(!is_null($album))
+        {
+            $songs = $album->songs;
+            return response()->json([
+                'status'=>true,
+                'data'=>$songs,
+                'message'=>'Songs of Specific Album'
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status'=>false,
+                'data'=>null,
+                'message'=>'Album not Found'
+            ]);
+        }
+    }
 }
