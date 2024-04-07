@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Song;
 use Illuminate\Http\Request;
 
 class SongController extends Controller
@@ -13,12 +11,7 @@ class SongController extends Controller
      */
     public function index()
     {
-        $songs = Song::all();
-        return response()->json([
-            'status'=>true,
-            'data'=>$songs,
-            'message'=>"all songs returned successfully"
-        ]);
+        //
     }
 
     /**
