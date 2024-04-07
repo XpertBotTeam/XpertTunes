@@ -14,6 +14,7 @@ class Song extends Model
         'track',
         'genre',
         'release_date',
+        'album_id'
     ];
 
 
