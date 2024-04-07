@@ -23,5 +23,6 @@ Route::get('/albums/{id}/songs',[AlbumController::class,'songs']);
 // setting route group
 Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::resource('playlists',PlaylistController::class);
+    Route::get('/users/{id}/playlists',[UserController::class,'playlists']);
 });
 

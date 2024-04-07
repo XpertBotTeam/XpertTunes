@@ -50,5 +50,23 @@ class UserController extends Controller
             ]);
     }
 
-
+    public function playlists($id, Request $request)
+    {
+        $user= User::find($id);
+        if(!is_null($user))
+        {
+            $playlists=$user->playlists;
+            return response()->json([
+                'status' => true,
+                'data' => $playlists,
+                'message' => 'playlists of a specific user'
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'message' => 'User not Found'
+            ]);
+        }
+    }
 }
