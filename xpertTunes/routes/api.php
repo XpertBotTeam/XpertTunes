@@ -19,6 +19,7 @@ Route::get('/artists/{id}/albums',[ArtistController::class,'albums']);
 Route::resource('songs',SongController::class);
 Route::get('/albums/{id}/songs',[AlbumController::class,'songs']);
 
+Route::get('/artists/{id}/songs',[ArtistController::class,'songs']);
 
 // setting route group
 Route::group(['middleware'=>['auth:sanctum']],function(){

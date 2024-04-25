@@ -14,7 +14,8 @@ class Song extends Model
         'track',
         'genre',
         'release_date',
-        'album_id'
+        'album_id',
+        'artist_id'
     ];
 
 
@@ -22,8 +23,8 @@ class Song extends Model
         return $this->belongsTo(Album::class);
     }
 
-    public function artists(){
-        return $this->belongsToMany(Artist::class);
+    public function artist(){
+        return $this->belongsTo(Artist::class);
     }
 
     public function playlists(){

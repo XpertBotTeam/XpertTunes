@@ -127,6 +127,28 @@ class ArtistController extends Controller
         }
     }
 
+    public function songs($id, Request $request)
+    {
+        $artist = Artist::find($id);
+        if(!is_null($artist))
+        {
+            $songs = $artist->songs;
+            return response()->json([
+                'status'=>true,
+                'data'=>$songs,
+                'message'=>'Songs for Specific Artist'
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status'=>false,
+                'data'=>null,
+                'message'=>'Artist not Found'
+            ]);
+        }
+    }
+
     /* public function albums($id, Request $request)
     {
         $artist= Artist::with('albums')->find($id);
