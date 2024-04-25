@@ -21,9 +21,13 @@ Route::get('/albums/{id}/songs',[AlbumController::class,'songs']);
 
 Route::get('/artists/{id}/songs',[ArtistController::class,'songs']);
 
+
 // setting route group
 Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::resource('playlists',PlaylistController::class);
     Route::get('/users/{id}/playlists',[UserController::class,'playlists']);
+    Route::post('/playlists/{id}/songs', [PlaylistController::class,'addSongToPlaylist']);
+    Route::get('/playlists/{id}/songs', [PlaylistController::class,'songs']);
+    Route::delete('/playlists/{id}/songs/{songId}', [PlaylistController::class,'removeSongFromPlaylist']);
 });
 

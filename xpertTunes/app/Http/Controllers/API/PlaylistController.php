@@ -6,6 +6,8 @@ use App\Models\Playlist;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PlaylistRequest;
+use App\Http\Requests\PlaylistSongRequest;
+use App\Models\Song;
 
 class PlaylistController extends Controller
 {
@@ -144,4 +146,103 @@ class PlaylistController extends Controller
         }
     }
 
+    public function addSongToPlaylist(PlaylistSongRequest $request)
+    {
+        $user=auth()->user();
+        $playlistId = $request->input('playlist_id');
+        $songId = $request->input('song_id');
+        
+
+        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlistId)->exists();
+        if(is_null($playlist)){
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'massage' => 'User is not authenticated'
+            ]);
+        }
+        $playlist = Playlist::findOrFail($playlistId);
+        $song = Song::findOrFail($songId);
+
+        
+        if ($playlist->songs()->where('song_id', $songId)->exists()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Song already exists in the playlist'
+            ], 422);
+        }
+
+        
+        $playlist->songs()->attach($songId);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Song added to playlist successfully'
+        ], 200);
+    }
+
+
+    public function songs($id)
+    {
+        $playlist = Playlist::find($id);
+        if(!is_null($playlist))
+        {
+            $songs = $playlist->songs;
+            return response()->json([
+                'status'=>true,
+                'data'=>$playlist,
+                'message'=>'Songs for Specific playlist'
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status'=>false,
+                'data'=>null,
+                'message'=>'playlist not Found'
+            ]);
+        }
+    }
+
+
+    public function removeSongFromPlaylist($playlistId, $songId)
+    {
+        $user=auth()->user();
+        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlistId)->exists();
+        if(is_null($playlist)){
+            return response()->json([
+                'status' => false,
+                'data' => null,
+                'massage' => 'User is not authenticated'
+            ]);
+        }
+
+        $playlist = Playlist::find($playlistId);
+        $song = $playlist->songs()->where('song_id', $songId)->first();
+
+        if (is_null($playlist)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Playlist not found'
+            ]);
+        }
+
+        
+        if (is_null($song)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Song does not exist in the playlist'
+            ]);
+        }
+
+        
+        $playlist->songs()->detach($songId);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Song removed from playlist successfully'
+        ]);
+    }
 }
+
+
