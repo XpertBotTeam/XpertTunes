@@ -70,45 +70,92 @@ class SongController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(SongRequest $request, string $id)
-{
-    $song = Song::find($id);
+    // public function update(Request $request, string $id)
+    // {
+    //     $song = Song::find($id);
+    
+    //     if (is_null($song)) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'data' => null,
+    //             'message' => 'Song data not found'
+    //         ]);
+    //     }
 
-    if (is_null($song)) {
-        return response()->json([
-            'status' => false,
-            'data' => null,
-            'message' => 'Song data not found'
-        ]);
-    }
+    //     $dataFields = $request->validate([
+    //         "title" => "required",
+    //         "track" => "nullable | mimes:mp3",
+    //         "genre" => "required",
+    //         "release_date" => "required",
+    //         "album_id" => "nullable",
+    //         "artist_id" => "required",
+    //     ]);
+        
+        
+    //     if ($request->hasFile('track')) {
+    //         Storage::disk('public')->delete($song->track);
+    //         $track = $request->file('track');
+    //         $filePath = $track->store('tracks', 'public');
+    //         $dataFields['track'] = $filePath;
+    //     }
+    
+    //     $song->update($dataFields);
+    
+    //     return response()->json([
+    //         'status' => true,
+    //         'data' => $song,
+    //         'message' => 'Song data updated successfully'
+    //     ]);
+    // }
 
-    // Check if a new track file is being uploaded
-    if ($request->hasFile('track')) {
-        // Delete the old track file from storage
-        Storage::disk('public')->delete($song->track);
 
-        // Store the new track file
-        $track = $request->file('track');
-        $filePath = $track->store('tracks', 'public');
 
-        // Update the track path in the song data
-        $song->track = $filePath;
-    }
+    public function update(Request $request, $id)
+        {
+            
+            $song = Song::find($id);
+            
+            if(is_null($song)){
+                return response()->json([
+                    'status' => false,
+                    'data' => null,
+                    'message' => 'Song not found'
+                ]);
+            }
 
-    // Update other song data
-    $song->title = $request->title;
-    $song->genre = $request->genre;
-    $song->release_date = $request->release_date;
-    $song->album_id = $request->album_id;
-    $song->artist_id = $request->artist_id;
-    $song->save();
+            $request->validate([
+                'title' => 'required',
+                'genre' => 'required',
+                'track' => 'nullable|mimes:mp3',
+                'artist_id' => 'required',
+                'album_id' => 'nullable',
+                'release_date' => 'required'
+            ]);
 
-    return response()->json([
-        'status' => true,
-        'data' => $song,
-        'message' => 'Song data updated successfully'
-    ]);
-}
+            // Selectively update song data
+            $song->title = $request->input('title');
+            $song->genre = $request->input('genre');
+            $song->artist_id = $request->input('artist_id');
+            $song->album_id = $request->input('album_id');
+            $song->release_date = $request->input('release_date');
+
+            // Handle track update if provided
+            if ($request->hasFile('track')) {
+                Storage::disk('public')->delete($song->track);
+                $track = $request->file('track');
+                $filePath = $track->store('tracks', 'public');
+                $song->track = $filePath;
+            }
+
+            $song->save();
+
+            return response()->json([
+                'status' => true,
+                'data' => $song,
+                'message' => 'Song Updated Successfully'
+            ]);
+        }
+
 
     /**
      * Remove the specified resource from storage.
