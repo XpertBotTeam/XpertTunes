@@ -74,7 +74,7 @@ class ArtistController extends Controller
     public function update(ArtistRequest $request, string $id)
     {
         $artist = Artist::find($id);
-        $artist = $artist->update($request->all());
+        $artist->update($request->all());
         return response()->json([
             'status' => true,
             'data' => $artist,

@@ -25,7 +25,6 @@ class AlbumRequest extends FormRequest
             'title'=>'required',
             'release_date'=>'required|date',
             'artist_id'=>'required',
-            'cover_pic' => 'nullable'
         ];
     }
 }

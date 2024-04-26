@@ -23,7 +23,6 @@ class ArtistRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'picture' => 'nullable'
         ];
     }
 }

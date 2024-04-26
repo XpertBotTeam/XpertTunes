@@ -38,7 +38,6 @@ class UserController extends Controller
         $user->name = $request->get('name');
         $user->username = $request->get('username');
         $user->email = $request->get('email');
-        $user->pfp = $request->get('pfp');
         $user->password = bcrypt($request->get('password'));
         $user->save();
 
