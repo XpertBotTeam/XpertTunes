@@ -23,7 +23,7 @@ class SongRequest extends FormRequest
     {
         return [
             "title" => "required",
-            "track" => "required",
+            "track" => "required | mimes:mp3",
             "genre" => "required",
             "release_date" => "required",
             "album_id" => "nullable",

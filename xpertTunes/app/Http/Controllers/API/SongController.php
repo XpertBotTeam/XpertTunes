@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Song;
 use Illuminate\Http\Request;
 use App\Http\Requests\SongRequest;
+use Illuminate\Support\Facades\Storage;
 
 class SongController extends Controller
 {
@@ -27,7 +28,12 @@ class SongController extends Controller
      */
     public function store(SongRequest $request)
     {
-        $song = Song::create($request->all());
+        $track = $request->file('track');        
+        $filePath = $track->store('tracks', 'public');
+        $songData = $request->except('track'); 
+        $songData['track'] = $filePath; 
+
+        $song = Song::create($songData);
         return response()->json([
             'status'=>true,
             'data'=>$song,
@@ -59,38 +65,50 @@ class SongController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        $song = Song::find($id);
-        if(!is_null($song))
-        {
-            $song->update($request->all());
-            return response()->json([
-                'status'=>true,
-                'data'=>$song,
-                'message'=>'Song data updated successfully'
-            ]);
-        }
-        else
-        {
-            return response()->json([
-                'status'=>false,
-                'data'=>null,
-                'message'=>'Song data not found'
-            ]);
-        }
+    public function update(SongRequest $request, string $id)
+{
+    $song = Song::find($id);
+
+    if (is_null($song)) {
+        return response()->json([
+            'status' => false,
+            'data' => null,
+            'message' => 'Song data not found'
+        ]);
     }
+
+    // Check if a new track file is being uploaded
+    if ($request->hasFile('track')) {
+        // Delete the old track file from storage
+        Storage::disk('public')->delete($song->track);
+
+        // Store the new track file
+        $track = $request->file('track');
+        $filePath = $track->store('tracks', 'public');
+
+        // Update the track path in the song data
+        $song->track = $filePath;
+    }
+
+    // Update other song data
+    $song->title = $request->title;
+    $song->genre = $request->genre;
+    $song->release_date = $request->release_date;
+    $song->album_id = $request->album_id;
+    $song->artist_id = $request->artist_id;
+    $song->save();
+
+    return response()->json([
+        'status' => true,
+        'data' => $song,
+        'message' => 'Song data updated successfully'
+    ]);
+}
 
     /**
      * Remove the specified resource from storage.
@@ -100,6 +118,7 @@ class SongController extends Controller
         $song = Song::find($id);
         if(!is_null($song))
         {
+            Storage::disk('public')->delete($song->track);
             $song->delete();
             return response()->json([
                 'status'=>true,
