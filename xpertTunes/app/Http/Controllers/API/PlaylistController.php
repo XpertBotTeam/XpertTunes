@@ -222,43 +222,42 @@ class PlaylistController extends Controller
 
 
     public function removeSongFromPlaylist($playlistId, $songId)
-    {
-        $user=auth()->user();
-        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlistId)->exists();
-        if(is_null($playlist)){
-            return response()->json([
-                'status' => false,
-                'data' => null,
-                'massage' => 'User is not authenticated'
-            ]);
-        }
+{
+    $user = auth()->user();
 
-        $playlist = Playlist::find($playlistId);
-        $song = $playlist->songs()->where('song_id', $songId)->first();
-
-        if (is_null($playlist)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Playlist not found'
-            ]);
-        }
-
-        
-        if (is_null($song)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Song does not exist in the playlist'
-            ]);
-        }
-
-        
-        $playlist->songs()->detach($songId);
-
+    if (!$user) {
         return response()->json([
-            'status' => true,
-            'message' => 'Song removed from playlist successfully'
+            'status' => false,
+            'message' => 'User is not authenticated'
+        ], 401);
+    }
+
+    $playlist = Playlist::where('user_id', $user->id)->find($playlistId);
+
+    if (is_null($playlist)) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Playlist not found'
+        ], 404);
+    }
+
+    $song = $playlist->songs()->where('song_id', $songId)->first();
+
+    if (is_null($song)) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Song does not exist in the playlist'
         ]);
     }
+
+    $playlist->songs()->detach($songId);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Song removed from playlist successfully'
+    ]);
+}
+
 }
 
 
