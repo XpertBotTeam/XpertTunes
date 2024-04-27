@@ -148,54 +148,51 @@ class PlaylistController extends Controller
 
     public function addSongToPlaylist(PlaylistSongRequest $request)
 {
-    try {
-        $user = auth()->user();
-        
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'User is not authenticated'
-            ], 401);
-        }
+    $user = auth()->user();
 
-        $playlistId = $request->input('playlist_id');
-        $songId = $request->input('song_id');
-
-        $playlist = Playlist::where('user_id', $user->id)->findOrFail($playlistId);
-        $song = Song::findOrFail($songId);
-
-        if ($playlist->songs()->where('song_id', $songId)->exists()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Song already exists in the playlist'
-            ], 422);
-        }
-
-        $playlist->songs()->attach($songId);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Song added to playlist successfully'
-        ], 200);
-    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        if ($e->getModel() == Playlist::class) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Playlist not found'
-            ], 404);
-        } elseif ($e->getModel() == Song::class) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Song not found'
-            ], 404);
-        }
-    } catch (\Exception $e) {
+    if (!$user) {
         return response()->json([
             'status' => false,
-            'message' => $e->getMessage()
-        ], 500);
+            'message' => 'User is not authenticated'
+        ], 401);
     }
+
+    $playlistId = $request->input('playlist_id');
+    $songId = $request->input('song_id');
+
+    $playlist = Playlist::where('user_id', $user->id)->find($playlistId);
+
+    if (is_null($playlist)) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Playlist not found'
+        ], 404);
+    }
+
+    $song = Song::find($songId);
+
+    if (is_null($song)) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Song not found'
+        ], 404);
+    }
+
+    if ($playlist->songs()->where('song_id', $songId)->exists()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Song already exists in the playlist'
+        ], 422);
+    }
+
+    $playlist->songs()->attach($songId);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Song added to playlist successfully'
+    ], 200);
 }
+
 
 
     public function songs($id)
