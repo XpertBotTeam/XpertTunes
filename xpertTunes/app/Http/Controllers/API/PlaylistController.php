@@ -147,24 +147,23 @@ class PlaylistController extends Controller
     }
 
     public function addSongToPlaylist(PlaylistSongRequest $request)
-    {
-        $user=auth()->user();
-        $playlistId = $request->input('playlist_id');
-        $songId = $request->input('song_id');
+{
+    try {
+        $user = auth()->user();
         
-
-        $playlist = Playlist::where('user_id', $user->id)->where('id', $playlistId)->exists();
-        if(is_null($playlist)){
+        if (!$user) {
             return response()->json([
                 'status' => false,
-                'data' => null,
-                'massage' => 'User is not authenticated'
-            ]);
+                'message' => 'User is not authenticated'
+            ], 401);
         }
-        $playlist = Playlist::findOrFail($playlistId);
+
+        $playlistId = $request->input('playlist_id');
+        $songId = $request->input('song_id');
+
+        $playlist = Playlist::where('user_id', $user->id)->findOrFail($playlistId);
         $song = Song::findOrFail($songId);
 
-        
         if ($playlist->songs()->where('song_id', $songId)->exists()) {
             return response()->json([
                 'status' => false,
@@ -172,14 +171,31 @@ class PlaylistController extends Controller
             ], 422);
         }
 
-        
         $playlist->songs()->attach($songId);
 
         return response()->json([
             'status' => true,
             'message' => 'Song added to playlist successfully'
         ], 200);
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        if ($e->getModel() == Playlist::class) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Playlist not found'
+            ], 404);
+        } elseif ($e->getModel() == Song::class) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Song not found'
+            ], 404);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
     }
+}
 
 
     public function songs($id)
